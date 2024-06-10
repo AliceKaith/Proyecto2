@@ -1,9 +1,14 @@
 import os
 import customtkinter as ctk
 
-
-
 class App(ctk.CTk):
+
+    DATA_TEST = {
+        "limite_inferior":"1231231.00",
+        "limite superior":"13123123.00",
+        "cuota_fija":"100,000.00",
+        "porcentaje":"56.00"
+    }
     
     def __init__(self,width,height):
         super().__init__()
