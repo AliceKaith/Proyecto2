@@ -3,6 +3,7 @@ import customtkinter as ctk
 
 class App(ctk.CTk):
 
+    CHOICES = ["1","2"]
     DATA_TEST = {
         "limite_inferior":"1231231.00",
         "limite superior":"13123123.00",
@@ -35,8 +36,9 @@ class App(ctk.CTk):
         # Crear botones
         self.clients_button = ctk.CTkButton(self.home_frame, text="Clientes", command=self.show_clients, width=20)
         self.clients_button.grid(row=1, column=0, pady=10, sticky="w")
+        # self.clients_button
 
-        self.monthly_tables_button = ctk.CTkButton(self.home_frame, text="Tablas mensuales", command=self.show_monthly_tables, width=20)
+        self.monthly_tables_button = ctk.CTkButton(self.home_frame, text="Tablas mensuales", command=lambda: self.show_monthly_tables(self.CHOICES), width=20)
         self.monthly_tables_button.grid(row=2, column=0, pady=10, sticky="w")
 
     def show_frame(self, frame):
@@ -46,10 +48,17 @@ class App(ctk.CTk):
         self.clients_frame.pack(fill=ctk.BOTH, expand=True, padx=10, pady=10)
         self.show_frame(self.clients_frame)
 
-    def show_monthly_tables(self):
+    def show_monthly_tables(self,choices):
         print("uwu")
-        # messagebox.showinfo("Tablas mensuales", "Aquí se mostrarían las tablas mensuales.")
-
+        combobox = ctk.CTkComboBox(master=self.home_frame,
+                                     values=choices,
+                                     command=self.combobox_callback)
+        combobox.grid(row=2, column=1, pady=10, sticky="w")
+        combobox.set("")
+        
+    def combobox_callback(choice):
+        print("combobox dropdown clicked:", choice)
+        
 class ClientsFrame(ctk.CTkFrame):
     def __init__(self, master):
         super().__init__(master)
