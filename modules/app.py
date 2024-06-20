@@ -55,6 +55,7 @@ class App(ctk.CTk):
         combobox = ctk.CTkComboBox(master=self.home_frame,
                                    values=choices,
                                    command=self.combobox_callback)
+        
         combobox.grid(row=2, column=1, pady=10, sticky="w")
         combobox.set("")
         
