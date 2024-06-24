@@ -1,6 +1,6 @@
 from conn import c
 
-async def create_tables():
+def create_tables():
     c.execute("""
         CREATE TABLE Variables (
             id INT AUTO_INCREMENT PRIMARY KEY,
@@ -78,3 +78,6 @@ async def create_tables():
             fecha DATE NOT NULL
         );
     """)
+
+if __name__=="__main__":
+    create_tables()
