@@ -21,6 +21,9 @@ class App(ctk.CTk):
         # Crear frames para cada pantalla
         self.home_frame = ctk.CTkFrame(self)
         self.clients_frame = ClientsFrame(self)
+        
+        # Diccionario para almacenar selecciones
+        self.selections = {}
 
         # Mostrar la pantalla inicial
         self.show_frame(self.home_frame)
@@ -50,17 +53,20 @@ class App(ctk.CTk):
 
     def show_monthly_tables(self):
         current_month = datetime.datetime.now().month
-        choices = [calendar.month_name[month] for month in range(1, 13) if month <= current_month]
+        current_year = datetime.datetime.now().year
+        choices = [f"{calendar.month_name[month]} {current_year}" for month in range(1, 13) if month <= current_month]
 
-        combobox = ctk.CTkComboBox(master=self.home_frame,
-                                   values=choices,
-                                   command=self.combobox_callback)
-        
-        combobox.grid(row=2, column=1, pady=10, sticky="w")
-        combobox.set("")
-        
+        self.combobox = ctk.CTkComboBox(master=self.home_frame,
+                                        values=choices,
+                                        command=self.combobox_callback)
+        self.combobox.grid(row=2, column=1, pady=10, sticky="w")
+        self.combobox.set("")
+
     def combobox_callback(self, choice):
+        current_year = datetime.datetime.now().year
+        self.selections[choice] = current_year
         print("Combobox dropdown clicked:", choice)
+        print("Selections:", self.selections)
         
 class ClientsFrame(ctk.CTkFrame):
     def __init__(self, master):
@@ -78,5 +84,3 @@ class ClientsFrame(ctk.CTkFrame):
     def go_back(self):
         self.pack_forget()
         self.master.show_frame(self.master.home_frame)
-
-
