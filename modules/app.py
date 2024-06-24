@@ -13,13 +13,12 @@ class App(ctk.CTk):
         "porcentaje": "56.00"
     }
     TABS = [
-        "Inicio",
-        "Clientes",
-        "Tablas",
-        "Isr"
-        ]
-    
-    
+        {"tab_name": "Inicio"},
+        {"tab_name": "Clientes"},
+        {"tab_name": "Tablas"},
+        {"tab_name": "Isr"}
+    ]
+
     def __init__(self, width, height):
         super().__init__()
         self.title("Aplicación de Ejemplo")
@@ -65,10 +64,10 @@ class App(ctk.CTk):
         current_year = datetime.datetime.now().year
         choices = [f"{calendar.month_name[month]} {current_year}" for month in range(1, 13) if month <= current_month]
 
-        self.combobox = ctk.CTkComboBox(master=self.home_frame,
+        self.combobox = ctk.CTkComboBox(master=self.tab_variables['Tablas'],
                                         values=choices,
                                         command=self.combobox_callback)
-        self.combobox.grid(row=2, column=1, pady=10, sticky="w")
+        self.combobox.grid(row=3, column=0, pady=10, sticky="w")
         self.combobox.set("")
 
     def combobox_callback(self, choice):
@@ -77,19 +76,17 @@ class App(ctk.CTk):
         print("Combobox dropdown clicked:", choice)
         print("Selections:", self.selections)
 
-
     # Quiero que al llamar esta funcion el tipo de dato lista que revisa tenga el siguiente formato
     # [{"tab_name":"inicio"},{"tab_name":"isr"}]
     # de ese modo podemos acceder al nombre
-    def create_tabs(self,tabs: List[str]):
+    def create_tabs(self, tabs: List[Dict[str, str]]):
         self.tab_variables = {}
         self.tabview = ctk.CTkTabview(master=self.home_frame)
         self.tabview.pack(fill='both', expand=True)
         
-        for tab_name in tabs:
+        for tab in tabs:
+            tab_name = tab["tab_name"]
             self.tab_variables[tab_name] = self.tabview.add(tab_name)
-            
-    
 
 class ClientsFrame(ctk.CTkFrame):
     def __init__(self, master):
