@@ -31,6 +31,9 @@ class App(ctk.CTk):
         self.clients_frame = ClientsFrame(self)
         self.create_tabs(self.TABS)
 
+        # Diccionario para almacenar selecciones
+        self.selections = {}
+
         # Mostrar la pantalla inicial
         self.show_frame(self.home_frame)
         self.create_widgets()
@@ -59,17 +62,20 @@ class App(ctk.CTk):
 
     def show_monthly_tables(self):
         current_month = datetime.datetime.now().month
-        choices = [calendar.month_name[month] for month in range(1, 13) if month <= current_month]
+        current_year = datetime.datetime.now().year
+        choices = [f"{calendar.month_name[month]} {current_year}" for month in range(1, 13) if month <= current_month]
 
-        combobox = ctk.CTkComboBox(master=self.home_frame,
-                                   values=choices,
-                                   command=self.combobox_callback)
-        
-        combobox.grid(row=2, column=1, pady=10, sticky="w")
-        combobox.set("")
-        
+        self.combobox = ctk.CTkComboBox(master=self.home_frame,
+                                        values=choices,
+                                        command=self.combobox_callback)
+        self.combobox.grid(row=2, column=1, pady=10, sticky="w")
+        self.combobox.set("")
+
     def combobox_callback(self, choice):
+        current_year = datetime.datetime.now().year
+        self.selections[choice] = current_year
         print("Combobox dropdown clicked:", choice)
+        print("Selections:", self.selections)
 
 
     # Quiero que al llamar esta funcion el tipo de dato lista que revisa tenga el siguiente formato
@@ -101,5 +107,3 @@ class ClientsFrame(ctk.CTkFrame):
     def go_back(self):
         self.pack_forget()
         self.master.show_frame(self.master.tab_variables['Clientes'])
-
-
