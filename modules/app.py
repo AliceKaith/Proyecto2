@@ -3,6 +3,9 @@ import calendar
 import datetime
 from typing import Dict, List
 import customtkinter as ctk
+from tkinter import filedialog
+import xml.etree.ElementTree as ET
+import sqlite3
 
 class App(ctk.CTk):
 
@@ -36,6 +39,16 @@ class App(ctk.CTk):
         # Mostrar la pantalla inicial
         self.show_frame(self.home_frame)
         self.create_widgets()
+        
+        # Obtener la ruta del directorio actual del script
+        modules = os.path.dirname(__file__)
+
+        # Construir la ruta completa a la base de datos
+        db_relative_path = os.path.join('..', 'db', 'main.db')  # '..' sube un nivel al directorio padre
+        self.db_path = os.path.abspath(os.path.join(modules, db_relative_path))
+        
+        # Conectar a la base de datos
+        self.db_connection = sqlite3.connect(self.db_path)
 
     def create_widgets(self):
         # Crear el contenedor para la página de inicio
@@ -48,6 +61,9 @@ class App(ctk.CTk):
         # Crear botones
         self.clients_button = ctk.CTkButton(self.tab_variables['Clientes'], text="Clientes", command=self.show_clients, width=20)
         self.clients_button.grid(row=1, column=0, pady=10, sticky="w")
+
+        self.import_button = ctk.CTkButton(self.tab_variables['Clientes'], text="Importar XML", command=self.import_xml, width=20)
+        self.import_button.grid(row=2, column=0, pady=10, sticky="w")
 
         self.monthly_tables_button = ctk.CTkButton(self.tab_variables['Tablas'], text="Tablas mensuales", command=self.show_monthly_tables, width=20)
         self.monthly_tables_button.grid(row=2, column=0, pady=10, sticky="w")
@@ -75,10 +91,44 @@ class App(ctk.CTk):
         self.selections[choice] = current_year
         print("Combobox dropdown clicked:", choice)
         print("Selections:", self.selections)
+    
+    #importar el XML y leerlo
+    def import_xml(self):
+        file_path = filedialog.askopenfilename(filetypes=[("XML files", "*.xml")])
+        if file_path:
+            print(f"Archivo importado: {file_path}")
+            self.parse_and_insert_xml(file_path)
 
-    # Quiero que al llamar esta funcion el tipo de dato lista que revisa tenga el siguiente formato
-    # [{"tab_name":"inicio"},{"tab_name":"isr"}]
-    # de ese modo podemos acceder al nombre
+    def parse_and_insert_xml(self, file_path):
+        tree = ET.parse(file_path)
+        root = tree.getroot()
+        current_date = datetime.datetime.now().strftime("%Y-%m-%d")  # Obtener la fecha actual
+
+        # Iterar sobre cada elemento Fila
+        for fila in root.findall('Fila'):
+            try:
+                ingresos = float(fila.find('ingresos').text)
+                retencion_10 = float(fila.find('retencion_10').text)
+                deducciones = float(fila.find('deducciones').text)
+                base = float(fila.find('base').text)
+                isr_o_favor = float(fila.find('isr_o_favor').text)
+                
+                self.insert_into_db(ingresos, retencion_10, deducciones, base, isr_o_favor, current_date)
+                
+            except AttributeError as e:
+                print(f"Error: Elemento no encontrado en la fila. {e}")
+            except ValueError as e:
+                print(f"Error: Conversión a float fallida. {e}")
+    
+    #insertar datos en la base de datos
+    def insert_into_db(self, ingresos, retencion_10, deducciones, base, isr_o_favor, fecha):
+        cursor = self.db_connection.cursor()
+        cursor.execute("""
+            INSERT INTO Regimen (ingresos, retencion_10, deducciones, base, isr_o_favor, fecha)
+            VALUES (?, ?, ?, ?, ?, ?)
+        """, (ingresos, retencion_10, deducciones, base, isr_o_favor, fecha))
+        self.db_connection.commit()
+
     def create_tabs(self, tabs: List[Dict[str, str]]):
         self.tab_variables = {}
         self.tabview = ctk.CTkTabview(master=self.home_frame)
