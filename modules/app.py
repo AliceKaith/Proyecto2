@@ -62,8 +62,7 @@ class App(ctk.CTk):
         # Crear botones
         
 
-        self.monthly_tables_button = ctk.CTkButton(self.tab_variables['Tablas'], text="Tablas mensuales", command=self.show_monthly_tables, width=20)
-        self.monthly_tables_button.grid(row=2, column=0, pady=10, sticky="w")
+        self.show_monthly_tables()  
 
         
         self.home_frames(self.clients)
@@ -120,11 +119,20 @@ class App(ctk.CTk):
         current_year = datetime.datetime.now().year
         choices = [f"{calendar.month_name[month]} {current_year}" for month in range(1, 13) if month <= current_month]
 
+        # combobox del tab tablas
         self.combobox = ctk.CTkComboBox(master=self.tab_variables['Tablas'],
-                                        values=choices,
-                                        command=self.combobox_callback)
-        self.combobox.grid(row=3, column=0, pady=10, sticky="w")
+                                    values=choices,
+                                    command=self.combobox_callback)
+        self.combobox.grid(row=0, column=0, padx=30, pady=10, sticky="nw")
         self.combobox.set("")
+
+    # frames del tab tablas
+        self.frames_tablas = ctk.CTkFrame(self.tab_variables['Tablas'],bg_color="transparent",fg_color="#474A56",height=550,width=450,corner_radius=50)
+        self.frames_tablas.place(x=10,y=60)
+
+        self.frames_tablas = ctk.CTkFrame(self.tab_variables['Tablas'],bg_color="transparent",fg_color="#474A56",height=550,width=700,corner_radius=50)
+        self.frames_tablas.place(x=500,y=60)
+
 
     def combobox_callback(self, choice):
         current_year = datetime.datetime.now().year
