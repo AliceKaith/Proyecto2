@@ -29,7 +29,7 @@ class App(ctk.CTk):
         ctk.set_appearance_mode('dark')
 
         # Crear frames para cada pantalla
-        self.home_frame = ctk.CTkFrame(self)
+        self.home_frame = ctk.CTkFrame(self,fg_color="#0B0B0D")
         self.clients_frame = ClientsFrame(self)
         self.create_tabs(self.TABS)
 
@@ -38,7 +38,6 @@ class App(ctk.CTk):
 
         # Mostrar la pantalla inicial
         self.show_frame(self.home_frame)
-        self.create_widgets()
         
         # Obtener la ruta del directorio actual del script
         modules = os.path.dirname(__file__)
@@ -46,27 +45,68 @@ class App(ctk.CTk):
         # Construir la ruta completa a la base de datos
         db_relative_path = os.path.join('..', 'db', 'main.db')  # '..' sube un nivel al directorio padre
         self.db_path = os.path.abspath(os.path.join(modules, db_relative_path))
-        
-        # Conectar a la base de datos
         self.db_connection = sqlite3.connect(self.db_path)
+        
+        self.clients = ["karla","raul"]
+        self.create_widgets()
+        # Conectar a la base de datos
 
     def create_widgets(self):
         # Crear el contenedor para la página de inicio
         self.home_frame.pack(fill=ctk.BOTH, expand=True, padx=10, pady=10)
 
         # Crear el título de la página de inicio
-        self.title_label = ctk.CTkLabel(self.tab_variables['Inicio'], text="Página de Inicio", font=("Arial", 16))
-        self.title_label.grid(row=0, column=0, pady=10, sticky="w")
+        # self.title_label = ctk.CTkLabel(self.tab_variables['Inicio'], text="Página de Inicio", font=("Arial", 16))
+        # self.title_label.grid(row=0, column=0, pady=10, sticky="w")
 
         # Crear botones
-        self.clients_button = ctk.CTkButton(self.tab_variables['Clientes'], text="Clientes", command=self.show_clients, width=20)
-        self.clients_button.grid(row=1, column=0, pady=10, sticky="w")
-
-        self.import_button = ctk.CTkButton(self.tab_variables['Clientes'], text="Importar XML", command=self.import_xml, width=20)
-        self.import_button.grid(row=2, column=0, pady=10, sticky="w")
+        
 
         self.monthly_tables_button = ctk.CTkButton(self.tab_variables['Tablas'], text="Tablas mensuales", command=self.show_monthly_tables, width=20)
         self.monthly_tables_button.grid(row=2, column=0, pady=10, sticky="w")
+
+        
+        self.home_frames(self.clients)
+        self.client_frames()
+
+    def home_frames(self,clients):
+        self.frame_home_clients = ctk.CTkFrame(self.tab_variables['Inicio'],bg_color="transparent",fg_color="#474A56",width=1000,height=500,corner_radius=20)
+        self.frame_home_clients.place(x=10,y=0)
+
+        self.frame_home_selection = ctk.CTkFrame(self.tab_variables['Inicio'],bg_color="transparent",fg_color="#474A56",width=200,height=500,corner_radius=20)
+        self.frame_home_selection.place(x=1030,y=0)
+
+        self.combobox_home_clients =  ctk.CTkComboBox(master=self.frame_home_selection,
+                                        values=clients,
+                                        command=self.clients_combobox_callback)
+        
+        self.combobox_home_clients.place(x=35,y=10)
+        self.combobox_home_clients.set("")
+
+        self.button_import_file = ctk.CTkButton(self.tab_variables['Inicio'],bg_color="transparent",fg_color="#929AAB",text_color="black",hover_color="#D3D5FD",width=50,height=50,corner_radius=20,text="Insertar Clientes")
+        self.button_import_file.place(x=10,y=550)
+
+        # self.clients_button = ctk.CTkButton(self.tab_variables['Inicio'], bg_color="transparent",height=50,corner_radius=20,text="Clientes", command=self.show_clients, width=20)
+        # self.clients_button.place(x=150,y=550)
+
+        self.import_button = ctk.CTkButton(self.tab_variables['Inicio'], bg_color="transparent",fg_color="#929AAB",text_color="black",hover_color="#D3D5FD",height=50,corner_radius=20,text="Importar XML", command=self.import_xml, width=20)
+        self.import_button.place(x=150,y=550)
+
+
+
+    def client_frames(self):        
+        
+        self.frame_client_tabla1 = ctk.CTkFrame(self.tab_variables['Clientes'],bg_color="transparent",fg_color="#474A56",width=600,height=600,corner_radius=20)
+        self.frame_client_tabla1.place(x=10,y=0)
+
+        self.frame_client_tabla2 = ctk.CTkFrame(self.tab_variables['Clientes'],bg_color="transparent",fg_color="#474A56",width=600,height=600,corner_radius=20)
+        self.frame_client_tabla2.place(x=620,y=0)
+
+       
+        
+    def clients_combobox_callback(self,choice):
+        self.client_selected = choice
+        print("Combobox dropdown clicked:", self.client_selected)
 
     def show_frame(self, frame):
         frame.tkraise()
@@ -110,7 +150,16 @@ class App(ctk.CTk):
                 ingresos = float(fila.find('ingresos').text)
                 retencion_10 = float(fila.find('retencion_10').text)
                 deducciones = float(fila.find('deducciones').text)
-                base = float(fila.find('base').text)
+
+                iva_venta = 0 #float(fila.find('iva_venta').text)
+                iva_retenido = 0 #float(fila.find('iva_retenido').text)
+                iva_acreditable = 0 #float(fila.find('iva_acreditable').text)
+
+                subsidio_acreditable = 0
+                pagos_provisionales = 0
+                credito_general = 0
+
+                base = float(ingresos - deducciones) #float(fila.find('base').text)
                 isr_o_favor = float(fila.find('isr_o_favor').text)
                 
                 self.insert_into_db(ingresos, retencion_10, deducciones, base, isr_o_favor, current_date)
@@ -131,7 +180,7 @@ class App(ctk.CTk):
 
     def create_tabs(self, tabs: List[Dict[str, str]]):
         self.tab_variables = {}
-        self.tabview = ctk.CTkTabview(master=self.home_frame)
+        self.tabview = ctk.CTkTabview(master=self.home_frame,fg_color="#0B0B0D")
         self.tabview.pack(fill='both', expand=True)
         
         for tab in tabs:
