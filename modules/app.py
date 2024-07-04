@@ -69,17 +69,17 @@ class App(ctk.CTk):
         self.client_frames()
 
     def home_frames(self,clients):
-        self.frame_home_clients = ctk.CTkFrame(self.tab_variables['Inicio'],bg_color="transparent",fg_color="#474A56",width=1000,height=500,corner_radius=20)
-        self.frame_home_clients.place(x=10,y=0)
+        self.frame_home_clients = ctk.CTkFrame(self.tab_variables['Inicio'],bg_color="transparent",fg_color="#494949",width=1000,height=500,corner_radius=20)
+        self.frame_home_clients.place(x=10,y=20)
 
-        self.frame_home_selection = ctk.CTkFrame(self.tab_variables['Inicio'],bg_color="transparent",fg_color="#474A56",width=200,height=500,corner_radius=20)
-        self.frame_home_selection.place(x=1030,y=0)
+        self.frame_home_selection = ctk.CTkFrame(self.tab_variables['Inicio'],bg_color="transparent",fg_color="#494949",width=200,height=500,corner_radius=20)
+        self.frame_home_selection.place(x=1030,y=20)
 
         self.combobox_home_clients =  ctk.CTkComboBox(master=self.frame_home_selection,
                                         values=clients,
                                         command=self.clients_combobox_callback)
         
-        self.combobox_home_clients.place(x=35,y=10)
+        self.combobox_home_clients.place(x=35,y=15)
         self.combobox_home_clients.set("")
 
         self.button_import_file = ctk.CTkButton(self.tab_variables['Inicio'],bg_color="transparent",fg_color="#929AAB",text_color="black",hover_color="#D3D5FD",width=50,height=50,corner_radius=20,text="Insertar Clientes")
@@ -95,11 +95,11 @@ class App(ctk.CTk):
 
     def client_frames(self):        
         
-        self.frame_client_tabla1 = ctk.CTkFrame(self.tab_variables['Clientes'],bg_color="transparent",fg_color="#474A56",width=600,height=600,corner_radius=20)
-        self.frame_client_tabla1.place(x=10,y=0)
+        self.frame_client_tabla1 = ctk.CTkFrame(self.tab_variables['Clientes'],bg_color="transparent",fg_color="#494949",width=600,height=600,corner_radius=20)
+        self.frame_client_tabla1.place(x=10,y=30)
 
-        self.frame_client_tabla2 = ctk.CTkFrame(self.tab_variables['Clientes'],bg_color="transparent",fg_color="#474A56",width=600,height=600,corner_radius=20)
-        self.frame_client_tabla2.place(x=620,y=0)
+        self.frame_client_tabla2 = ctk.CTkFrame(self.tab_variables['Clientes'],bg_color="transparent",fg_color="#494949",width=600,height=600,corner_radius=20)
+        self.frame_client_tabla2.place(x=630,y=30)
 
        
         
@@ -127,11 +127,19 @@ class App(ctk.CTk):
         self.combobox.set("")
 
     # frames del tab tablas
-        self.frames_tablas = ctk.CTkFrame(self.tab_variables['Tablas'],bg_color="transparent",fg_color="#474A56",height=550,width=450,corner_radius=50)
-        self.frames_tablas.place(x=10,y=60)
+        self.frames_tablas = ctk.CTkFrame(self.tab_variables['Tablas'],bg_color="transparent",fg_color="#494949",height=550,width=450,corner_radius=20)
+        self.frames_tablas.place(x=30,y=60)
 
-        self.frames_tablas = ctk.CTkFrame(self.tab_variables['Tablas'],bg_color="transparent",fg_color="#474A56",height=550,width=700,corner_radius=50)
+        self.frames_tablas = ctk.CTkFrame(self.tab_variables['Tablas'],bg_color="transparent",fg_color="#494949",height=550,width=700,corner_radius=20)
         self.frames_tablas.place(x=500,y=60)
+
+        
+    #frames de la tab isr
+        self.frames_tablas = ctk.CTkFrame(self.tab_variables['Isr'],bg_color="transparent",fg_color="#494949",height=600,width=600,corner_radius=20)
+        self.frames_tablas.place(x=10,y=30)
+
+        self.frames_tablas = ctk.CTkFrame(self.tab_variables['Isr'],bg_color="transparent",fg_color="#494949",height=600,width=600,corner_radius=20)
+        self.frames_tablas.place(x=630,y=30)
 
 
     def combobox_callback(self, choice):
@@ -139,7 +147,7 @@ class App(ctk.CTk):
         self.selections[choice] = current_year
         print("Combobox dropdown clicked:", choice)
         print("Selections:", self.selections)
-    
+  
     #importar el XML y leerlo
     def import_xml(self):
         file_path = filedialog.askopenfilename(filetypes=[("XML files", "*.xml")])
